@@ -1,0 +1,8 @@
+*.tar.gz
+.scannerwork
+/doc/example.kdbx
+/keepass-secret
+/keepass-secret.exe
+/target/
+TODO.txt
+cover.out

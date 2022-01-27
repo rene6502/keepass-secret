@@ -1,0 +1,85 @@
+variables:
+  GO_BUILD_IMAGE: golang:1.17
+  GITHUB_IMAGE:   $CI_REGISTRY/swdev/github-cli:1.0.0
+  GITHUB_TOKEN:   $GITHUB_INTERNAL_TOKEN
+  GH_REPO:        rene-hirsch/keepass-secret
+  VERSION:        $CI_COMMIT_TAG
+  COMMIT:         $CI_COMMIT_SHORT_SHA
+
+stages:
+  - test
+  - sonar
+  - build
+  - upload
+
+test:
+  ## perform unit test and collect code coverage for sonarqube
+  stage: test
+  image:  $GO_BUILD_IMAGE
+  services:
+    - $DOCKER_DIND_SERVICE
+  script:
+    - go test -coverprofile cover.out ./internal/...
+    - go tool cover -func cover.out
+  artifacts:
+    paths:
+      - cover.out
+
+sonar:
+  stage: sonar
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  script:
+    - sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN
+
+build:
+  ## build linux/windows binaries and compress to .tar.gz for asset upload
+  stage: build
+  image:  $GO_BUILD_IMAGE
+  services:
+    - $DOCKER_DIND_SERVICE
+  script:
+    - export LDFLAGS="-s -w -X keepass-secret/internal/cmd.version=$VERSION -X keepass-secret/internal/cmd.commit=$COMMIT"
+    - |-
+      export GOARCH=amd64
+      export GOOS=linux
+      export FILE=keepass-secret-$VERSION-$GOOS-$GOARCH.tar.gz
+      echo "build $GOOS-$GOARCH"
+      go build -ldflags="$LDFLAGS" ./cmd/keepass-secret
+      tar -czvf $FILE keepass-secret LICENSE
+      sha256sum $FILE > $FILE.sha256sum
+      rm keepass-secret
+    - |-
+      export GOARCH=amd64
+      export GOOS=windows
+      export FILE=keepass-secret-$VERSION-$GOOS-$GOARCH.tar.gz
+      echo "build $GOOS-$GOARCH"
+      go build -ldflags="$LDFLAGS" ./cmd/keepass-secret
+      tar -czvf $FILE keepass-secret.exe LICENSE
+      sha256sum $FILE > $FILE.sha256sum
+      rm keepass-secret.exe
+  artifacts:
+    paths:
+      - "*.tar.gz"
+      - "*.sha256sum"
+
+upload:
+  ## upload as github assets
+  stage: upload
+  image: $GITHUB_IMAGE
+  services:
+    - $DOCKER_DIND_SERVICE
+  script:
+    - echo "release $VERSION"
+    - |-
+      if gh release list | grep -q $VERSION; then
+        echo "release v$VERSION exists already"
+      else
+        echo "create release $VERSION"
+        gh release create $VERSION --generate-notes
+      fi;
+    - gh release upload $VERSION *.tar.gz *.sha256sum --clobber
+  only:
+    - tags
+    

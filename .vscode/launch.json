@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch file",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/cmd/keepass-secret",
+      "args": [
+        "get",
+        "-d",
+        "${workspaceFolder}/internal/cmd/test/test.kdbx",
+        "-p",
+        "1234",
+        "-e",
+        "entry-1",
+        "-f",
+        "UserName",
+      ],
+      "env": { "KSPASSWORD": "1234" }
+    }
+  ]
+}
