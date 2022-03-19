@@ -51,8 +51,8 @@ func include(tags []string, tag string) bool {
 }
 
 // create opaque (regular) secret
-func createOpaqueSecret(path string, notes *Notes, values map[string]string, lines *[]string, stdout io.Writer, stderr io.Writer) {
-	title := values["Title"]
+func createOpaqueSecret(path string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+	title, _ := values.GetValue("Title")
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
 		return
@@ -77,7 +77,7 @@ func createOpaqueSecret(path string, notes *Notes, values map[string]string, lin
 	for i := 0; i < len(secretKeys); i++ {
 		secretKey := secretKeys[i]
 		valuesKey := notes.Get(secretKey)
-		value, ok := values[valuesKey]
+		value, ok := values.GetValue(valuesKey)
 		if ok {
 			value64 := base64.StdEncoding.EncodeToString([]byte(value))
 			*lines = append(*lines, "  "+secretKey+": \""+value64+"\"")
@@ -88,27 +88,27 @@ func createOpaqueSecret(path string, notes *Notes, values map[string]string, lin
 }
 
 // create docker secret
-func createDockerSecret(path string, values map[string]string, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createDockerSecret(path string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 
-	title := values["Title"]
+	title, _ := values.GetValue("Title")
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
 		return
 	}
 
-	username := values["UserName"]
+	username, _ := values.GetValue("UserName")
 	if username == "" {
 		fmt.Fprintf(stderr, "missing UserName for entry '%s'\n", path)
 		return
 	}
 
-	password := values["Password"]
+	password, _ := values.GetValue("Password")
 	if password == "" {
 		fmt.Fprintf(stderr, "missing Password for entry '%s'\n", path)
 		return
 	}
 
-	url := values["URL"]
+	url, _ := values.GetValue("URL")
 	if url == "" {
 		fmt.Fprintf(stderr, "missing URL for entry '%s'\n", path)
 		return

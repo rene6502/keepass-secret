@@ -135,8 +135,8 @@ func TestSecretsDockerSecretMissingTitle(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	createDockerSecret("e0", values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	createDockerSecret("e0", *values, &lines, &stdout, &stderr)
 
 	expected := "missing title for entry 'e0'\n"
 	actual := stderr.String()
@@ -152,9 +152,9 @@ func TestSecretsDockerSecretMissingUserName(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	values["Title"] = "Title"
-	createDockerSecret("e0", values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	values.SetValue("Title", "Title")
+	createDockerSecret("e0", *values, &lines, &stdout, &stderr)
 
 	expected := "missing UserName for entry 'e0'\n"
 	actual := stderr.String()
@@ -170,10 +170,10 @@ func TestSecretsDockerSecretMissingPassword(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	values["Title"] = "Title"
-	values["UserName"] = "UserName"
-	createDockerSecret("e0", values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	values.SetValue("Title", "Title")
+	values.SetValue("UserName", "UserName")
+	createDockerSecret("e0", *values, &lines, &stdout, &stderr)
 
 	expected := "missing Password for entry 'e0'\n"
 	actual := stderr.String()
@@ -189,11 +189,11 @@ func TestSecretsDockerSecretMissingURL(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	values["Title"] = "Title"
-	values["UserName"] = "UserName"
-	values["Password"] = "Password"
-	createDockerSecret("e0", values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	values.SetValue("Title", "Title")
+	values.SetValue("UserName", "UserName")
+	values.SetValue("Password", "Password")
+	createDockerSecret("e0", *values, &lines, &stdout, &stderr)
 
 	expected := "missing URL for entry 'e0'\n"
 	actual := stderr.String()
@@ -209,9 +209,9 @@ func TestSecretsOpaqueSecretMissingTitle(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	notes := NewNotes(values)
-	createOpaqueSecret("e0", notes, values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	notes := NewNotes(*values)
+	createOpaqueSecret("e0", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "missing title for entry 'e0'\n"
 	actual := stderr.String()
@@ -227,11 +227,11 @@ func TestSecretsOpaqueSecretMissingValue(t *testing.T) {
 	stdout := strings.Builder{}
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
-	values := make(map[string]string)
-	values["Title"] = "Title"
-	values["Notes"] = "secret-password=Password"
-	notes := NewNotes(values)
-	createOpaqueSecret("e1", notes, values, &lines, &stdout, &stderr)
+	values := NewEntry()
+	values.SetValue("Title", "Title")
+	values.SetValue("Notes", "secret-password=Password")
+	notes := NewNotes(*values)
+	createOpaqueSecret("e1", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "entry 'e1' does not contain value 'Password'\n"
 	actual := stderr.String()

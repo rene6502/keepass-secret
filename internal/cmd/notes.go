@@ -32,10 +32,10 @@ func (notes *Notes) GetKeys() []string {
 	return result
 }
 
-func NewNotes(values map[string]string) *Notes {
+func NewNotes(values Entry) *Notes {
 	notes := Notes{make([]string, 0), make(map[string]string)}
 
-	if notesStr, ok := values["Notes"]; ok {
+	if notesStr, ok := values.GetValue("Notes"); ok {
 		lines := strings.Split(strings.ReplaceAll(notesStr, "\r", ""), "\n")
 		for i := 0; i < len(lines); i++ {
 			line := lines[i]

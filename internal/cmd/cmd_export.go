@@ -18,8 +18,10 @@ func CmdExport(entryMap *EntryMap, out string, stdout io.Writer, stderr io.Write
 
 		values, ok := entryMap.GetValues(path)
 		if ok {
-			for key := range values {
-				entry[key] = values[key]
+			names := values.GetNames()
+			for j := 0; j < len(names); j++ {
+				name := names[j]
+				entry[name], _ = values.GetValue(name)
 			}
 		}
 

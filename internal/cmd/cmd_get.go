@@ -19,7 +19,7 @@ func CmdGet(entryMap *EntryMap, path string, field string, stdout io.Writer, std
 		return 1 // failure
 	}
 
-	value, ok := values[field]
+	value, ok := values.GetValue(field)
 	if !ok {
 		fmt.Fprintf(stderr, "field '%s' does not exist in path '%s'\n", field, path)
 		return 1 // failure

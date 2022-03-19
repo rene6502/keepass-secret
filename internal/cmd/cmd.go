@@ -47,21 +47,20 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) int {
 	}
 
 	root := &db.Content.Root.Groups[0]
-	recycleBin := db.Content.Meta.RecycleBinUUID
 
 	modified := false
 	result := 0
 	switch options.GetCmd() {
 	case "secrets":
-		entryMap := NewEntryMap(root, recycleBin)
+		entryMap := NewEntryMap(db)
 		return CmdSecrets(entryMap, options.GetOut(), options.GetTag(), stdout, stderr) // write secrets to yaml file
 	case "get":
-		entryMap := NewEntryMap(root, recycleBin)
+		entryMap := NewEntryMap(db)
 		return CmdGet(entryMap, options.GetPath(), options.GetFields()[0], stdout, stderr) // returns value in stdout
 	case "set":
 		modified = CmdSet(root, options.GetPath(), options.GetFields(), stdout, stderr) // writes to existing file
 	case "export":
-		entryMap := NewEntryMap(root, recycleBin)
+		entryMap := NewEntryMap(db)
 		return CmdExport(entryMap, options.GetOut(), stdout, stderr) // export to json file
 	case "import":
 		modified, result = CmdImport(root, options.GetIn(), stdout, stderr) // import from json file
