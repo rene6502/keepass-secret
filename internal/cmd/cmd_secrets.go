@@ -25,6 +25,8 @@ func CmdSecrets(entryMap *EntryMap, out string, tag string, stdout io.Writer, st
 					createOpaqueSecret(path, notes, values, &lines, stdout, stderr)
 				case "docker":
 					createDockerSecret(path, values, &lines, stdout, stderr)
+				case "tls":
+					createTlsSecret(path, values, &lines, stdout, stderr)
 				}
 			}
 		}
@@ -139,4 +141,45 @@ func createDockerSecret(path string, values Entry, lines *[]string, stdout io.Wr
 	*lines = append(*lines, "type: kubernetes.io/dockerconfigjson")
 	*lines = append(*lines, "data:")
 	*lines = append(*lines, "  .dockerconfigjson: "+secret64)
+}
+
+// create docker secret
+func createTlsSecret(path string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+
+	title, _ := values.GetValue("Title")
+	if title == "" {
+		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
+		return
+	}
+
+	username, _ := values.GetValue("UserName")
+	if username == "" {
+		fmt.Fprintf(stderr, "missing UserName for entry '%s'\n", path)
+		return
+	}
+
+	password, _ := values.GetValue("Password")
+	if password == "" {
+		fmt.Fprintf(stderr, "missing Password for entry '%s'\n", path)
+		return
+	}
+
+	fmt.Fprintf(stdout, "secret tls name=%s crt=%s key=%s\n", title, username[:27], password[:27])
+
+	if len(*lines) > 0 {
+		*lines = append(*lines, "")
+		*lines = append(*lines, "---")
+	}
+
+	crt := base64.StdEncoding.EncodeToString([]byte(username))
+	key := base64.StdEncoding.EncodeToString([]byte(password))
+
+	*lines = append(*lines, "apiVersion: v1")
+	*lines = append(*lines, "kind: Secret")
+	*lines = append(*lines, "metadata:")
+	*lines = append(*lines, "  name: \""+title+"\"")
+	*lines = append(*lines, "type: kubernetes.io/tls")
+	*lines = append(*lines, "data:")
+	*lines = append(*lines, "  tls.crt: \""+crt+"\"")
+	*lines = append(*lines, "  tls.key: \""+key+"\"")
 }

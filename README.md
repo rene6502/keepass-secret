@@ -74,6 +74,26 @@ data:
   .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2RvY2tlci5leGFtcGxlLmNvbSI6eyJ1c2VybmFtZSI6Im15dXNlciIsInBhc3N3b3JkIjoiNWRhOWVkNmRiOSIsImVtYWlsIjoibWFpbEBleGFtcGxlLmRlIiwiYXV0aCI6ImJYbDFjMlZ5T2pWa1lUbGxaRFprWWprPSJ9fX0=
 ```
 
+### TLS secrets
+A line with `secret-type=tls` marks the KeePass entry to be exported as a Kubernetes TLS secret, 
+containing a certificate and its private key.  
+The certificate must be stored in the UserName field and the private key in the Password field.  
+Just copy/paste the PEM texts to the fields. KeePass will keep the line breaks.
+
+![](doc/tls.png)
+
+Generated YAML:
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "example.com"
+type: kubernetes.io/tls
+data:
+  tls.crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS...LQo="
+  tls.key: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS...LQo="
+```
+
 ### Tagging
 A list of tags can be added to each entry.  
 Example:
