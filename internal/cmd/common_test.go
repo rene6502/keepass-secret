@@ -64,6 +64,31 @@ func compareFiles(file1 string, file2 string, t *testing.T) bool {
 	return compareLines(lines1, lines2, t)
 }
 
+// compare bytes with binary file and fail if they are not equal
+func compareBinary(bytes []byte, file string, t *testing.T) bool {
+
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		t.Errorf("%s file does not exist\n", file)
+		return false
+	}
+
+	bytesRead, _ := ioutil.ReadFile(file)
+
+	if len(bytes) != len(bytesRead) {
+		t.Errorf("file %s size mismatch %d/%d", file, len(bytes), len(bytesRead))
+		return false
+	}
+
+	for i := 0; i < len(bytes); i++ {
+		if bytes[i] != bytesRead[i] {
+			t.Errorf("file %s byte mismatch %02x/%02x", file, bytes[i], bytesRead[i])
+			return false
+		}
+	}
+
+	return true
+}
+
 // create empty database
 func testCreateDatabase(db string, pw string, t *testing.T) bool {
 	stdout := strings.Builder{}

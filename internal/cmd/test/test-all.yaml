@@ -40,6 +40,16 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
+  name: "binary"
+type: Opaque
+data:
+  password: "QUJDRA=="
+  username: "YWRtaW4w"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
   name: "entry-a1"
 type: Opaque
 data:

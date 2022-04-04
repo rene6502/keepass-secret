@@ -12,7 +12,7 @@ type EntryMap struct {
 }
 
 // recursively process group (folder of entries) and store entries in map
-func (entryMap *EntryMap) processGroup(group *gokeepasslib.Group, path string, recycleBin gokeepasslib.UUID) {
+func (entryMap *EntryMap) processGroup(group *gokeepasslib.Group, path string, recycleBin gokeepasslib.UUID, binaries gokeepasslib.Binaries) {
 	if recycleBin.Compare(group.UUID) {
 		return // ignore entries from recycle bin
 	}
@@ -26,6 +26,17 @@ func (entryMap *EntryMap) processGroup(group *gokeepasslib.Group, path string, r
 			values.SetValue(value.Key, value.Value.Content)
 		}
 
+		for j := 0; j < len(entry.Binaries); j++ {
+			value := &entry.Binaries[j]
+			binary := binaries.Find(value.Value.ID)
+			if binary != nil {
+				content, err := binary.GetContent()
+				if err == nil {
+					values.SetBinary(value.Name, []byte(content))
+				}
+			}
+		}
+
 		key := path + entry.GetTitle()
 		entryMap.entries[key] = *values
 
@@ -34,7 +45,7 @@ func (entryMap *EntryMap) processGroup(group *gokeepasslib.Group, path string, r
 
 	for i := 0; i < len(group.Groups); i++ {
 		childGroup := &group.Groups[i]
-		entryMap.processGroup(childGroup, path+childGroup.Name+"/", recycleBin)
+		entryMap.processGroup(childGroup, path+childGroup.Name+"/", recycleBin, binaries)
 	}
 }
 
@@ -52,8 +63,8 @@ func NewEntryMap(db *gokeepasslib.Database) *EntryMap {
 
 	root := &db.Content.Root.Groups[0]
 	recycleBin := db.Content.Meta.RecycleBinUUID
-
-	entryMap.processGroup(root, "/", recycleBin)
+	binaries := db.Content.Meta.Binaries
+	entryMap.processGroup(root, "/", recycleBin, binaries)
 
 	return &entryMap
 }
