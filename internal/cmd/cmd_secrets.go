@@ -82,6 +82,7 @@ func createOpaqueSecret(path string, notes *Notes, values Entry, lines *[]string
 		value, ok := values.GetValue(valuesKey)
 		if ok {
 			value64 := base64.StdEncoding.EncodeToString([]byte(value))
+			secretKey = strings.TrimPrefix(secretKey, ":")
 			*lines = append(*lines, "  "+secretKey+": \""+value64+"\"")
 		} else {
 			fmt.Fprintf(stderr, "entry '%s' does not contain value '%s'\n", path, valuesKey)

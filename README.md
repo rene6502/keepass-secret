@@ -44,6 +44,8 @@ secret-postgresql-username=UserName
 This entry will be exported as an opaque secret with the keys postgresql-username and postgresql-password.  
 The value of `postgresql-username` is filled with the contents of the `UserName` field and  
 the value of `postgresql-password` is filled with the contents of the `Password` field
+>Any standard or custom property can be accessed this way.  
+>Standard properties are e.g.: Title, UserName, Password, URL
 
 Generated YAML:
 ```
@@ -56,6 +58,8 @@ data:
   postgresql-password: "OTA2OGY5MmEzNw=="
   postgresql-username: "bXl1c2Vy"
 ```
+>To use the reserved word 'type' as a key, escape it with a colon.  
+>e.g. secret-:type=prop1
 
 ### Docker secrets
 A line with `secret-type=docker` marks the KeePass entry to be exported as a Docker Kubernetes secret,  

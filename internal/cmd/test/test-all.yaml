@@ -60,6 +60,17 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
+  name: "entry-4"
+type: Opaque
+data:
+  password: "QCcjfA=="
+  username: "YWRtaW40"
+  type: "QTA="
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
   name: "entry-a1"
 type: Opaque
 data:
