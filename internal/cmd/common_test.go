@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -14,7 +13,7 @@ func readFile(file string, t *testing.T) string {
 		return ""
 	}
 
-	bytesRead, _ := ioutil.ReadFile(file)
+	bytesRead, _ := os.ReadFile(file)
 	str := string(bytesRead)
 	return str
 }
@@ -72,7 +71,7 @@ func compareBinary(bytes []byte, file string, t *testing.T) bool {
 		return false
 	}
 
-	bytesRead, _ := ioutil.ReadFile(file)
+	bytesRead, _ := os.ReadFile(file)
 
 	if len(bytes) != len(bytesRead) {
 		t.Errorf("file %s size mismatch %d/%d", file, len(bytes), len(bytesRead))

@@ -1,0 +1,6 @@
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - (*encoding/json.Encoder).Encode
+      - (*github.com/tobischo/gokeepasslib/v3.Database).UnlockProtectedEntries
+      - (*github.com/tobischo/gokeepasslib/v3.Database).LockProtectedEntries      
