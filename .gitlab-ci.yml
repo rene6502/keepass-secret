@@ -1,5 +1,5 @@
 variables:
-  GO_BUILD_IMAGE: golang:1.18
+  GO_BUILD_IMAGE: golang:1.19
   GITHUB_IMAGE:   $CI_REGISTRY/swdev/github-cli:1.0.0
   GITHUB_TOKEN:   $GITHUB_INTERNAL_TOKEN
   GH_REPO:        rene-hirsch/keepass-secret
