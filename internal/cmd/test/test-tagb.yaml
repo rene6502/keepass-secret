@@ -22,6 +22,18 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: "entry-b1"
+  namespace: "namespace-a"
+type: Opaque
+data:
+  password: "MTIzNA=="
+  username: "YWRtaW4tYjE="
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "entry-b1"
+  namespace: "namespace-c"
 type: Opaque
 data:
   password: "MTIzNA=="

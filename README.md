@@ -1,14 +1,8 @@
-
-
-
-
-
-
 # keepass-secret
 
-This command line tool converts entries from a KeePass 2.3 file into Kubernetes secrets in the form of a YAML file.  
-This tool was created to automatically create Kubernetes Secret in CI/CD pipelines to deploy workloads to Kubernetes clusters.  
-By using KeePass for encryption it is save to store this critical data in a source code control system.  
+This command line tool converts entries from a KeePass 2.3 file into Kubernetes secrets in the form of a YAML file.\
+This tool was created to automatically create Kubernetes Secret in CI/CD pipelines to deploy workloads to Kubernetes clusters.\
+By using KeePass for encryption it is save to store this critical data in a source code control system.\
 One major reason for this approach is that KeePass offers a wide variety of UIs for many platforms and the access key to the data is a single password, which is easy to communicate.
 
 The following commands are supported:
@@ -25,15 +19,15 @@ The following commands are supported:
 keepass-secret secrets -d keepass.kdbx -p 1234 -o secrets.yaml
 kubectl apply -n test -f secrets.yaml
 ```
-Only values wil be exported which contain special annotations in the Notes field.  
-The annotations must be prefixed with `secret-` and placed as separate lines in the Notes field.  
+Only values wil be exported which contain special annotations in the Notes field.\
+The annotations must be prefixed with `secret-` and placed as separate lines in the Notes field.\
 
 ### Opaque secrets
-A line with `secret-type=opaque` marks the KeePass entry to be exported as an opaque Kubernetes secret.  
-For each desired key/value pair in the secret, a line in the Notes field defines the mapping with the following syntax:  
+A line with `secret-type=opaque` marks the KeePass entry to be exported as an opaque Kubernetes secret.\
+For each desired key/value pair in the secret, a line in the Notes field defines the mapping with the following syntax:\
 `secret-<secret key name>=<KeePass field name>`
 
-Example:  
+Example:\
 ```
 secret-type=opaque
 secret-postgresql-password=Password
@@ -41,10 +35,10 @@ secret-postgresql-username=UserName
 ```
 ![](doc/opaque.png)
 
-This entry will be exported as an opaque secret with the keys postgresql-username and postgresql-password.  
-The value of `postgresql-username` is filled with the contents of the `UserName` field and  
+This entry will be exported as an opaque secret with the keys postgresql-username and postgresql-password.\
+The value of `postgresql-username` is filled with the contents of the `UserName` field and\
 the value of `postgresql-password` is filled with the contents of the `Password` field
->Any standard or custom property can be accessed this way.  
+>Any standard or custom property can be accessed this way.\
 >Standard properties are e.g.: Title, UserName, Password, URL
 
 Generated YAML:
@@ -58,11 +52,11 @@ data:
   postgresql-password: "OTA2OGY5MmEzNw=="
   postgresql-username: "bXl1c2Vy"
 ```
->To use the reserved word 'type' as a key, escape it with a colon.  
+>To use the reserved word 'type' as a key, escape it with a colon.\
 >e.g. secret-:type=prop1
 
 ### Docker secrets
-A line with `secret-type=docker` marks the KeePass entry to be exported as a Docker Kubernetes secret,  
+A line with `secret-type=docker` marks the KeePass entry to be exported as a Docker Kubernetes secret,\
 which can be used as imagePullSecrets.
 
 ![](doc/docker.png)
@@ -80,8 +74,8 @@ data:
 
 ### TLS secrets
 A line with `secret-type=tls` marks the KeePass entry to be exported as a Kubernetes TLS secret, 
-containing a certificate and its private key.  
-The certificate must be stored in the UserName field and the private key in the Password field.  
+containing a certificate and its private key.\
+The certificate must be stored in the UserName field and the private key in the Password field.\
 Just copy/paste the PEM texts to the fields. KeePass will keep the line breaks.
 
 ![](doc/tls.png)
@@ -99,14 +93,17 @@ data:
 ```
 
 ### Tagging
-A list of tags can be added to each entry.  
+A list of tags can be added to each entry.\
 Example:
 ```
 secret-tags=taga,tagb
 ```
-In the export command the option -t/--tag can then be used to filter entries based on the tag.  
+In the export command the option -t/--tag can then be used to filter entries based on the tag.\
 E.g. -t taga will export only those entries, which do have a taga in their tags list.
 
+### Namespace
+By default the exported secrets do not contain a namespace and therefore the namespace must be defined outside e.g. as parameter to the kubectl create/apply command.\
+By adding the optional field `secret-namespace` a comma separated list of namespaces can be defined. For each namespace the export will create a separate entry in the export file.
 
 ## Set fields of KeePass entry
 Create entry with set of fields.
@@ -115,17 +112,17 @@ keepass-secret set -d keepass.kdbx -p 1234 -e /entry-1 -f Password=1234 -f UserN
 ```
 - If the entry does not exist it will be created.
 - If the entry exists it will be deleted and re-created with the new fields.
-- The -e parameters specifies the path of the entry  
-  /entry-1 entry in root group  
+- The -e parameters specifies the path of the entry\
+  /entry-1 entry in root group\
   /group-1/entry-1 entry in group group-1
 - The parameter -f format is: `<field name>=<field value>`
 - The parameter -f may be repeated to write multiple fields of a single entry at once.
-- Passwords can be automatically generated by supplying a pattern in the password field  
+- Passwords can be automatically generated by supplying a pattern in the password field\
   (see [Password Generator](#password-generator)).
 
 
 ## Get value of KeePass entry field
-Get value of entry field and print it to stdout.  
+Get value of entry field and print it to stdout.\
 ```
 keepass-secret get -d keepass.kdbx -p 1234 -e /entry-1 -f Password
 ```
@@ -158,9 +155,9 @@ Imports entries from JSON file.
 ```
 keepass-secret import -d keepass.kdbx -p 1234 -i import.json
 ```
-- Will generate passwords if pattern is present in the password field  
+- Will generate passwords if pattern is present in the password field\
   (see [Password Generator](#password-generator)).
-- Specify option `--dry-run` to avoid modifications of the database.  
+- Specify option `--dry-run` to avoid modifications of the database.\
   Only changes are reported to stdout.
 
 ## Create empty KeePass file
@@ -170,18 +167,18 @@ keepass-secret init -d keepass.kdbx -p 1234
 ```
 
 ## Password Generator
-The import and set command support the generation of passwords.  
-Use the pattern `"{<type><len>}"` in the password field.  
-`<len>` is the password length  
-`<type>` is one of the following types:  
+The import and set command support the generation of passwords.\
+Use the pattern `"{<type><len>}"` in the password field.\
+`<len>` is the password length\
+`<type>` is one of the following types:\
 
-  **h** Lower-Case Hex Character  0123456789 abcdef  
-  **H**	Upper-Case Hex Character	0123456789 ABCDEF  
-  **A**	Mixed-Case Alphanumeric	ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789  
-  **L**	Mixed-Case Letter	ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz  
+  **h** Lower-Case Hex Character\0123456789 abcdef\
+  **H**	Upper-Case Hex Character	0123456789 ABCDEF\
+  **A**	Mixed-Case Alphanumeric	ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789\
+  **L**	Mixed-Case Letter	ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz\
   **S**	Printable 7-Bit ASCII	from '!' (0x21) to '~' (0x7e)
 
-  Example:  
+  Example:\
     "{A32}" -> create password with 32 alphanumeric characters
 
 ## Credits

@@ -24,7 +24,7 @@ func (notes *Notes) GetKeys() []string {
 
 	for i := 0; i < len(notes.keys); i++ {
 		key := notes.keys[i]
-		if key != "type" && key != "tags" {
+		if key != "type" && key != "tags" && key != "namespace" {
 			result = append(result, key)
 		}
 	}

@@ -18,15 +18,20 @@ func CmdSecrets(entryMap *EntryMap, out string, tag string, stdout io.Writer, st
 			notes := NewNotes(values)
 
 			tags := strings.Split(notes.Get("tags"), ",")
-			if include(tags, tag) {
-				secretType := notes.Get("type")
-				switch secretType {
-				case "opaque":
-					createOpaqueSecret(path, notes, values, &lines, stdout, stderr)
-				case "docker":
-					createDockerSecret(path, values, &lines, stdout, stderr)
-				case "tls":
-					createTlsSecret(path, values, &lines, stdout, stderr)
+			namespaces := strings.Split(notes.Get("namespace"), ",")
+
+			for j := 0; j < len(namespaces); j++ {
+				namespace := namespaces[j]
+				if include(tags, tag) {
+					secretType := notes.Get("type")
+					switch secretType {
+					case "opaque":
+						createOpaqueSecret(path, namespace, notes, values, &lines, stdout, stderr)
+					case "docker":
+						createDockerSecret(path, namespace, values, &lines, stdout, stderr)
+					case "tls":
+						createTlsSecret(path, namespace, values, &lines, stdout, stderr)
+					}
 				}
 			}
 		}
@@ -53,7 +58,7 @@ func include(tags []string, tag string) bool {
 }
 
 // create opaque (regular) secret
-func createOpaqueSecret(path string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createOpaqueSecret(path string, namespace string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 	title, _ := values.GetValue("Title")
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
@@ -69,6 +74,9 @@ func createOpaqueSecret(path string, notes *Notes, values Entry, lines *[]string
 	*lines = append(*lines, "kind: Secret")
 	*lines = append(*lines, "metadata:")
 	*lines = append(*lines, "  name: \""+title+"\"")
+	if len(namespace) > 0 {
+		*lines = append(*lines, "  namespace: \""+namespace+"\"")
+	}
 	*lines = append(*lines, "type: Opaque")
 	*lines = append(*lines, "data:")
 
@@ -91,7 +99,7 @@ func createOpaqueSecret(path string, notes *Notes, values Entry, lines *[]string
 }
 
 // create docker secret
-func createDockerSecret(path string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createDockerSecret(path string, namespace string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 
 	title, _ := values.GetValue("Title")
 	if title == "" {
@@ -139,13 +147,17 @@ func createDockerSecret(path string, values Entry, lines *[]string, stdout io.Wr
 	*lines = append(*lines, "kind: Secret")
 	*lines = append(*lines, "metadata:")
 	*lines = append(*lines, "  name: \""+title+"\"")
+	if len(namespace) > 0 {
+		*lines = append(*lines, "  namespace: \""+namespace+"\"")
+	}
+
 	*lines = append(*lines, "type: kubernetes.io/dockerconfigjson")
 	*lines = append(*lines, "data:")
 	*lines = append(*lines, "  .dockerconfigjson: "+secret64)
 }
 
 // create docker secret
-func createTlsSecret(path string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createTlsSecret(path string, namespace string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 
 	title, _ := values.GetValue("Title")
 	if title == "" {
@@ -179,6 +191,9 @@ func createTlsSecret(path string, values Entry, lines *[]string, stdout io.Write
 	*lines = append(*lines, "kind: Secret")
 	*lines = append(*lines, "metadata:")
 	*lines = append(*lines, "  name: \""+title+"\"")
+	if len(namespace) > 0 {
+		*lines = append(*lines, "  namespace: \""+namespace+"\"")
+	}
 	*lines = append(*lines, "type: kubernetes.io/tls")
 	*lines = append(*lines, "data:")
 	*lines = append(*lines, "  tls.crt: \""+crt+"\"")
