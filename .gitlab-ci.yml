@@ -16,8 +16,6 @@ test:
   ## perform unit test and collect code coverage for sonarqube
   stage: test
   image:  $GO_BUILD_IMAGE
-  services:
-    - $DOCKER_DIND_SERVICE
   script:
     - go test -coverprofile cover.out ./internal/...
     - go tool cover -func cover.out
@@ -37,8 +35,6 @@ build:
   ## build linux/windows binaries and compress to .tar.gz for asset upload
   stage: build
   image:  $GO_BUILD_IMAGE
-  services:
-    - $DOCKER_DIND_SERVICE
   script:
     - export LDFLAGS="-s -w -X keepass-secret/internal/cmd.version=$VERSION -X keepass-secret/internal/cmd.commit=$COMMIT"
     - |-
@@ -68,8 +64,6 @@ upload:
   ## upload as github assets
   stage: upload
   image: $GITHUB_IMAGE
-  services:
-    - $DOCKER_DIND_SERVICE
   script:
     - echo "release $VERSION"
     - |-
