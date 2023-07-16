@@ -18,11 +18,13 @@ var charsPrintable = []rune("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQR
 var regexPattern = regexp.MustCompile("^[h|H|A|L|S][0-9]{1,3}$")
 
 func createPassword(chars []rune, length int) string {
-	rand.Seed(time.Now().UnixNano())
+
+	source := rand.NewSource(time.Now().UnixNano())
+	randSource := rand.New(source)
 
 	var b strings.Builder
 	for i := 0; i < length; i++ {
-		b.WriteRune(chars[rand.Intn(len(chars))])
+		b.WriteRune(chars[randSource.Intn(len(chars))])
 	}
 
 	return b.String()

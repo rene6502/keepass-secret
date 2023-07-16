@@ -30,7 +30,7 @@ func (entryMap *EntryMap) processGroup(group *gokeepasslib.Group, path string, r
 			value := &entry.Binaries[j]
 			binary := binaries.Find(value.Value.ID)
 			if binary != nil {
-				content, err := binary.GetContent()
+				content, err := binary.GetContentString()
 				if err == nil {
 					values.SetBinary(value.Name, []byte(content))
 				}
