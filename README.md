@@ -2,7 +2,7 @@
 
 This command line tool converts entries from a KeePass 2.3 file into Kubernetes secrets in the form of a YAML file.\
 This tool was created to automatically create Kubernetes Secret in CI/CD pipelines to deploy workloads to Kubernetes clusters.\
-By using KeePass for encryption it is save to store this critical data in a source code control system.\
+By using KeePass for encryption it is save to store this sensitive data in a source code control system.\
 One major reason for this approach is that KeePass offers a wide variety of UIs for many platforms and the access key to the data is a single password, which is easy to communicate.
 
 The following commands are supported:
@@ -20,14 +20,14 @@ keepass-secret secrets -d keepass.kdbx -p 1234 -o secrets.yaml
 kubectl apply -n test -f secrets.yaml
 ```
 Only values wil be exported which contain special annotations in the Notes field.\
-The annotations must be prefixed with `secret-` and placed as separate lines in the Notes field.\
+The annotations must be prefixed with `secret-` and placed as separate lines in the Notes field.
 
 ### Opaque secrets
 A line with `secret-type=opaque` marks the KeePass entry to be exported as an opaque Kubernetes secret.\
 For each desired key/value pair in the secret, a line in the Notes field defines the mapping with the following syntax:\
 `secret-<secret key name>=<KeePass field name>`
 
-Example:\
+Example:
 ```
 secret-type=opaque
 secret-postgresql-password=Password
@@ -122,10 +122,14 @@ keepass-secret set -d keepass.kdbx -p 1234 -e /entry-1 -f Password=1234 -f UserN
 
 
 ## Get value of KeePass entry field
-Get value of entry field and print it to stdout.\
+Get value of entry field and print it to stdout.
 ```
 keepass-secret get -d keepass.kdbx -p 1234 -e /entry-1 -f Password
 ```
+or assign to shell variable
+```
+PASSWORD=$(keepass-secret get -d keepass.kdbx -p 1234 -e /entry-1 -f Password)
+```  
 
 
 ## Export to JSON file
@@ -170,7 +174,7 @@ keepass-secret init -d keepass.kdbx -p 1234
 The import and set command support the generation of passwords.\
 Use the pattern `"{<type><len>}"` in the password field.\
 `<len>` is the password length\
-`<type>` is one of the following types:\
+`<type>` is one of the following types:
 
   **h** Lower-Case Hex Character\0123456789 abcdef\
   **H**	Upper-Case Hex Character	0123456789 ABCDEF\
