@@ -74,7 +74,7 @@ func (options *Options) parseOptions(args []string, stderr io.Writer) bool {
 	outFlag := options.flags.StringP("out", "o", "", "output filename")
 	inFlag := options.flags.StringP("in", "i", "", "input filename")
 	dryRunFlag := options.flags.BoolP("dry-run", "", false, "do not modify database")
-	quietFlag := options.flags.BoolP("quiet", "", false, "suppress all normal output")
+	quietFlag := options.flags.BoolP("quiet", "q", false, "suppress all normal output")
 	options.flags.VarP(&options.fields, "field", "f", "field name and value")
 
 	err := options.flags.Parse(args)
@@ -121,7 +121,7 @@ func (options *Options) getUsage() string {
 	usage := strings.Builder{}
 
 	usage.WriteString(fmt.Sprintf("keepass-secret %s (%s)\n", version, commit))
-	usage.WriteString("usage: keepass-secret secrets -d keepass.kdbx -p 1234 -o secrets.yaml [--tag abc]\n")
+	usage.WriteString("usage: keepass-secret secrets -d keepass.kdbx -p 1234 -o secrets.yaml [--tag abc] [--quiet]\n")
 	usage.WriteString("       keepass-secret get     -d keepass.kdbx -p 1234 -e /entry-1 -f Password\n")
 	usage.WriteString("       keepass-secret set     -d keepass.kdbx -p 1234 -e /entry-1 -f Password=1234 -f UserName=admin\n")
 	usage.WriteString("       keepass-secret export  -d keepass.kdbx -p 1234 -o export.json\n")

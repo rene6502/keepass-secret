@@ -6,7 +6,7 @@ By using KeePass for encryption it is save to store this sensitive data in a sou
 One major reason for this approach is that KeePass offers a wide variety of UIs for many platforms and the access key to the data is a single password, which is easy to communicate.
 
 The following commands are supported:
-- [Create secrets YAML file](#create-secrets-yaml-file)
+- [Create secrets](#create-secrets)
 - [Set fields of KeePass entry](#set-fields-of-keepass-entry)
 - [Get value of KeePass entry field](#get-value-of-keepass-entry-field)
 - [Export to JSON file](#export-to-json-file)
@@ -14,11 +14,17 @@ The following commands are supported:
 - [Create empty KeePass file](#create-empty-keepass-file)
 - [Password Generator](#password-generator)
 
-## Create secrets YAML file
+## Create secrets
+Create secrets via YAML file:
 ```
 keepass-secret secrets -d keepass.kdbx -p 1234 -o secrets.yaml
 kubectl apply -n test -f secrets.yaml
 ```
+Create secrets using pipe:
+```
+keepass-secret secrets -d test.kdbx -p 1234 -o /dev/stdout --quiet | kubectl apply -f -
+```
+
 Only values wil be exported which contain special annotations in the Notes field.\
 The annotations must be prefixed with `secret-` and placed as separate lines in the Notes field.
 
