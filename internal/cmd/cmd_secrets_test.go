@@ -30,6 +30,45 @@ func TestSecrets(t *testing.T) {
 		t.Fail()
 	}
 
+	if len(stderr0.String()) != 0 {
+		t.Errorf("stderr not empty: %s", stderr0.String())
+	}
+
+	line := "secret opaque name=entry-1 fields=password,username"
+	if !strings.Contains(stdout0.String(), line) {
+		t.Errorf("stdout missing line: %s", stdout0.String())
+	}
+
+	// remove file
+	if err := os.Remove(out); err != nil {
+		t.Errorf("cannot delete %s", out)
+		return
+	}
+}
+
+// export all secrets with set quiet flag
+func TestSecretsQuiet(t *testing.T) {
+	db := "test/test.kdbx"
+	pw := "1234"
+	out := "test/test.yaml"
+
+	args := []string{"secrets", "-d", db, "-p", pw, "-o", out, "--quiet"}
+	stdout0 := strings.Builder{}
+	stderr0 := strings.Builder{}
+	result := Run(args, &stdout0, &stderr0)
+	if result != 0 {
+		t.Errorf("secrets failed, result=%d", result)
+		return
+	}
+
+	if len(stderr0.String()) != 0 {
+		t.Errorf("stderr not empty: %s", stderr0.String())
+	}
+
+	if len(stdout0.String()) != 0 {
+		t.Errorf("stdout not empty: %s", stdout0.String())
+	}
+
 	// remove file
 	if err := os.Remove(out); err != nil {
 		t.Errorf("cannot delete %s", out)

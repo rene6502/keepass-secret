@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
+	"strings"
 
 	"github.com/tobischo/gokeepasslib/v3"
 )
@@ -13,11 +13,15 @@ import (
 // - read all entries into a EntryMap structure for easy access
 // - delegate command to Cmd... structures
 // - save database if entries have been modified (and --dry-run is not set)
-func Run(args []string, stdout io.Writer, stderr io.Writer) int {
+func Run(args []string, stdout *strings.Builder, stderr *strings.Builder) int {
 	options := NewOptions()
 
 	if !options.Parse(args, stderr) {
 		return 1
+	}
+
+	if options.IsQuiet() {
+		stdout = &strings.Builder{} // route stdout to dummy string
 	}
 
 	if options.GetCmd() == "init" {

@@ -41,6 +41,7 @@ type Options struct {
 	out    string
 	in     string
 	dryRun bool
+	quiet  bool
 }
 
 func NewOptions() Options {
@@ -73,6 +74,7 @@ func (options *Options) parseOptions(args []string, stderr io.Writer) bool {
 	outFlag := options.flags.StringP("out", "o", "", "output filename")
 	inFlag := options.flags.StringP("in", "i", "", "input filename")
 	dryRunFlag := options.flags.BoolP("dry-run", "", false, "do not modify database")
+	quietFlag := options.flags.BoolP("quiet", "", false, "suppress all normal output")
 	options.flags.VarP(&options.fields, "field", "f", "field name and value")
 
 	err := options.flags.Parse(args)
@@ -88,6 +90,7 @@ func (options *Options) parseOptions(args []string, stderr io.Writer) bool {
 	options.out = *outFlag
 	options.in = *inFlag
 	options.dryRun = *dryRunFlag
+	options.quiet = *quietFlag
 
 	if options.pw == "" && os.Getenv("KSPASSWORD") != "" {
 		options.pw = os.Getenv("KSPASSWORD")
@@ -250,6 +253,10 @@ func (options *Options) GetIn() string {
 
 func (options *Options) IsDryRun() bool {
 	return options.dryRun
+}
+
+func (options *Options) IsQuiet() bool {
+	return options.quiet
 }
 
 func (options *Options) GetTag() string {
