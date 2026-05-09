@@ -107,6 +107,9 @@ secret-tags=taga,tagb
 In the export command the option -t/--tag can then be used to filter entries based on the tag.\
 E.g. -t taga will export only those entries, which do have a taga in their tags list.
 
+### Name
+By default the exported secrets use the saem name as the KeePass entries. By adding the optional field `secret-name` a custom name can be defined.
+
 ### Namespace
 By default the exported secrets do not contain a namespace and therefore the namespace must be defined outside e.g. as parameter to the kubectl create/apply command.\
 By adding the optional field `secret-namespace` a comma separated list of namespaces can be defined. For each namespace the export will create a separate entry in the export file.

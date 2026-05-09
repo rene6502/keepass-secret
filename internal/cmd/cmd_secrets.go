@@ -28,9 +28,9 @@ func CmdSecrets(entryMap *EntryMap, out string, tag string, stdout io.Writer, st
 					case "opaque":
 						createOpaqueSecret(path, namespace, notes, values, &lines, stdout, stderr)
 					case "docker":
-						createDockerSecret(path, namespace, values, &lines, stdout, stderr)
+						createDockerSecret(path, namespace, notes, values, &lines, stdout, stderr)
 					case "tls":
-						createTlsSecret(path, namespace, values, &lines, stdout, stderr)
+						createTlsSecret(path, namespace, notes, values, &lines, stdout, stderr)
 					}
 				}
 			}
@@ -59,7 +59,7 @@ func include(tags []string, tag string) bool {
 
 // create opaque (regular) secret
 func createOpaqueSecret(path string, namespace string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
-	title, _ := values.GetValue("Title")
+	title := getSecretName(notes, values)
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
 		return
@@ -99,9 +99,9 @@ func createOpaqueSecret(path string, namespace string, notes *Notes, values Entr
 }
 
 // create docker secret
-func createDockerSecret(path string, namespace string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createDockerSecret(path string, namespace string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 
-	title, _ := values.GetValue("Title")
+	title := getSecretName(notes, values)
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
 		return
@@ -157,9 +157,9 @@ func createDockerSecret(path string, namespace string, values Entry, lines *[]st
 }
 
 // create docker secret
-func createTlsSecret(path string, namespace string, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
+func createTlsSecret(path string, namespace string, notes *Notes, values Entry, lines *[]string, stdout io.Writer, stderr io.Writer) {
 
-	title, _ := values.GetValue("Title")
+	title := getSecretName(notes, values)
 	if title == "" {
 		fmt.Fprintf(stderr, "missing title for entry '%s'\n", path)
 		return
@@ -198,4 +198,15 @@ func createTlsSecret(path string, namespace string, values Entry, lines *[]strin
 	*lines = append(*lines, "data:")
 	*lines = append(*lines, "  tls.crt: \""+crt+"\"")
 	*lines = append(*lines, "  tls.key: \""+key+"\"")
+}
+
+func getSecretName(notes *Notes, values Entry) string {
+	name := notes.Get("name")
+	if name != "" {
+		return name
+	}
+
+	title, _ := values.GetValue("Title")
+
+	return title
 }
