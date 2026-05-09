@@ -175,7 +175,8 @@ func TestSecretsDockerSecretMissingTitle(t *testing.T) {
 	stderr := strings.Builder{}
 	lines := make([]string, 0)
 	values := NewEntry()
-	createDockerSecret("e0", "", *values, &lines, &stdout, &stderr)
+	notes := NewNotes(*values)
+	createDockerSecret("e0", "", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "missing title for entry 'e0'\n"
 	actual := stderr.String()
@@ -193,7 +194,8 @@ func TestSecretsDockerSecretMissingUserName(t *testing.T) {
 	lines := make([]string, 0)
 	values := NewEntry()
 	values.SetValue("Title", "Title")
-	createDockerSecret("e0", "", *values, &lines, &stdout, &stderr)
+	notes := NewNotes(*values)
+	createDockerSecret("e0", "", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "missing UserName for entry 'e0'\n"
 	actual := stderr.String()
@@ -212,7 +214,8 @@ func TestSecretsDockerSecretMissingPassword(t *testing.T) {
 	values := NewEntry()
 	values.SetValue("Title", "Title")
 	values.SetValue("UserName", "UserName")
-	createDockerSecret("e0", "", *values, &lines, &stdout, &stderr)
+	notes := NewNotes(*values)
+	createDockerSecret("e0", "", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "missing Password for entry 'e0'\n"
 	actual := stderr.String()
@@ -232,7 +235,8 @@ func TestSecretsDockerSecretMissingURL(t *testing.T) {
 	values.SetValue("Title", "Title")
 	values.SetValue("UserName", "UserName")
 	values.SetValue("Password", "Password")
-	createDockerSecret("e0", "", *values, &lines, &stdout, &stderr)
+	notes := NewNotes(*values)
+	createDockerSecret("e0", "", notes, *values, &lines, &stdout, &stderr)
 
 	expected := "missing URL for entry 'e0'\n"
 	actual := stderr.String()

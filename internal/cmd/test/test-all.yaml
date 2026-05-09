@@ -71,6 +71,16 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
+  name: "some-customized-name"
+type: Opaque
+data:
+  username: "VXNlcm5hbWU="
+  password: "UGFzc3dvcmQ="
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
   name: "entry-a1"
   namespace: "namespace-a"
 type: Opaque
